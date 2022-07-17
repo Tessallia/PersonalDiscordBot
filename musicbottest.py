@@ -4,7 +4,7 @@ from tokenkey import token
 import youtube_dl
 
 client = commands.Bot(command_prefix="!")
-
+print("why")
 @client.command()
 async def play (ctx, url : str):
     song_there = os.path.isfile("song.mp3")
