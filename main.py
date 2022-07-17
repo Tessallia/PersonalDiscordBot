@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from tokenkey import token
+from tokey import token
 from Responses import responses
 import os
 

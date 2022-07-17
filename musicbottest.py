@@ -1,6 +1,6 @@
 import discord, os
 from discord.ext import commands
-from tokenkey import token
+from tokey import token
 import youtube_dl
 
 client = commands.Bot(command_prefix="!")
