@@ -1,16 +1,28 @@
-# This is a sample Python script.
+import discord
+from discord.ext import commands
+from tokenkey import token
+from Responses import responses
+import os
 
-# Press Shift+F1 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+OP = "!"
+client = discord.Client()
 
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    commands = responses.keys()
+    if message.content.startswith(OP):
+        if message.content[1:] in commands:
+            await message.channel.send(responses[message.content[1:]])
 
+client.run(token())
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    print('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
