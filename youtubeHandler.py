@@ -1,8 +1,8 @@
-import youtube_dl, asyncio, sqlite3, os
+import yt_dlp, asyncio, sqlite3, os
 
 class music_downloader():
 
-
+    SONGS = 'songs'
     ydl_opts = {
            'format': 'bestaudio/best',
            'postprocessors': [{
@@ -10,52 +10,40 @@ class music_downloader():
                'preferredcodec': 'mp3',
                'preferredquality': '192',
            }],
+        "outtmpl": SONGS+'/%(id)s-%(title)s.%(ext)s',
        }
     #todo figure out if this needs to be async as well
     #todo create directory to put mp3s in
     #todo determine whether or not i should delete stuff that hasn't been used in a long time, or only delete when
     #   it starts to take up a lot of space and delete oldest and least used stuff.
 
-    async def get_song(self, url):
+
+    def get_title(self, url):
+        with yt_dlp.YoutubeDL({}) as ydl:
+            return ydl.extract_info(url)["title"]
+
+    def get_hash(self, url):
+        return url.split("watch?v=", 1)[1]
+
+    def check_songs(self,hash):
+        for song in os.listdir('songs'):
+            if song.startswith(hash):
+                return True
+    def get_songpath(self, hash):
+        for song in os.listdir('songs'):
+            if song.startswith(hash):
+                return 'songs/'+song
+    def get_song(self, url):
         """
         check database for song
         if song not in database call download
         """
-        pass
+        if not self.check_songs(self.get_hash(url)):
+            print("dl")
+            with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
+                ydl.download(url)
 
-    def search_youtube(self):
-        """
-        pull first result for calls that aren't url to a specific song
-        """
+        return self.get_songpath(self.get_hash(url))
 
-        pass
-
-    def download(self, url):
-        """
-        download song
-        get title
-        convert to mp3 named with title
-        save to database with url, title, and file path to mp3 file
-        """
-        pass
-
-    def update_db(self):
-        """
-        Add newly downloaded mp3 (naming mp3 handled by download func) to song directory
-        insert into db: url, title, file path for song
-        """
-        pass
-
-    def trim_db(self):
-        """
-        find songs that have the least plays, or haven't been played in a long and delete them
-        this function should be called by update when song directory gets too big.
-        """
-        pass
-
-
-def get_stuff(something):
-    for x in dir(something):
-        print(x)
-
-print(os.listdir('songs'))
+u2= "https://www.youtube.com/watch?v=IkIhgb-wgmM"
+url = "https://www.youtube.com/watch?v=7H-71p9vieI"
