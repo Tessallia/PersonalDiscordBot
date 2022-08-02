@@ -1,4 +1,4 @@
-import discord, asyncio
+import discord, asyncio, random
 from discord.ext import commands
 from tokey import token
 import youtubeHandler
@@ -16,16 +16,18 @@ def get_vc(ctx):
     for chan in ctx.guild.voice_channels:
         if ctx.author.id in chan.voice_states.keys():
             return chan
+    return None
 
 def get_voice(ctx):
     return discord.utils.get(client.voice_clients, guild=ctx.guild)
 
 async def con(ctx):
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name=get_vc(ctx).name)
-    try:
-        await voiceChannel.connect()
-    except Exception as e:
-        print(e)
+    if voiceChannel:
+        try:
+            await voiceChannel.connect()
+        except Exception as e:
+            print(e)
 
 async def song_geter(url):
     dl = youtubeHandler.music_downloader()
@@ -48,22 +50,30 @@ async def play(ctx, url : str):
         if not other song is in que
             wait for a bit and disconnect if nothing else added
     """
+    await ctx.send("whatever fuck you I'm doing it")
 
     sg = asyncio.create_task(song_geter(url))
-    voice = get_voice(ctx)
-    if not voice:
-        await con(ctx)
-    voice = get_voice(ctx)
 
-    if voice.channel != get_vc(ctx):
-        await voice.disconnect()
-        await con(ctx)
+    try:
         voice = get_voice(ctx)
+        if not voice:
+            await con(ctx)
+        voice = get_voice(ctx)
+
+        if voice.channel != get_vc(ctx):
+            await voice.disconnect()
+            await con(ctx)
+            voice = get_voice(ctx)
+    except:
+        await ctx.send("you rat bastard. You aren't even in here!")
+        return
+    #need to make reconnect for songs that take long to downloadn
 
     await sg
     song = sg.result()
-
-
+    if type(song) == list:
+        for x in song: queue.append(x)
+        song = queue.pop(0)
 
     def after_play(err):
         if len(queue) > 0:
@@ -74,6 +84,15 @@ async def play(ctx, url : str):
         voice.play(discord.FFmpegPCMAudio(song), after=after_play)
     elif voice.is_playing():
         add_queue(song)
+
+@client.command()
+async def shuffle(ctx):
+    global queue
+    queue = random.shuffle(queue)
+
+@client.command()
+async def loop(ctx):
+    pass
 
 @client.command()
 async def connect(ctx):

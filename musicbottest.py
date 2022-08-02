@@ -31,6 +31,7 @@ async def play (ctx, url : str):
 #    for x in dir(ctx):
 #        print(x)
     #print(ctx.author)
+    ctx.send("whatever fuck you I'm doing it")
     for x in dir(ctx.guild.voice_channels[0]):
         print(x)
 
