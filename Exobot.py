@@ -6,6 +6,7 @@ import youtubeHandler
 PREFIX = "!"
 client = commands.Bot(command_prefix=PREFIX)
 queue = []
+#   have bot auto disconect after not playing anything for a set amount of time
 
 def get_vc(ctx):
     """
@@ -72,19 +73,21 @@ async def play(ctx, url : str):
     await sg
     song = sg.result()
     if type(song) == list:
-        for x in song: queue.append(x)
-        song = queue.pop(0)
-
+        if len(song) > 0:
+            for x in song: queue.append(x)
+            song = queue.pop(0)
+        else: print('empty list')
     def after_play(err):
         if len(queue) > 0:
             next_song = queue.pop(0)
             voice.play(discord.FFmpegPCMAudio(next_song), after=after_play)
 
-    if not voice.is_playing():
-        voice.play(discord.FFmpegPCMAudio(song), after=after_play)
-    elif voice.is_playing():
-        add_queue(song)
-
+    try:
+        if not voice.is_playing():
+            voice.play(discord.FFmpegPCMAudio(song), after=after_play)
+        elif voice.is_playing():
+            add_queue(song)
+    except Exception as e: print(e)
 @client.command()
 async def shuffle(ctx):
     global queue

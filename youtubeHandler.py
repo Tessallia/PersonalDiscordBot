@@ -18,7 +18,8 @@ class music_downloader():
     #todo determine whether or not i should delete stuff that hasn't been used in a long time, or only delete when
     #   it starts to take up a lot of space and delete oldest and least used stuff.
 
-
+    def __init__(self):
+        pass
     def get_title(self, url):
         with yt_dlp.YoutubeDL({}) as ydl:
             return ydl.extract_info(url)["title"]
