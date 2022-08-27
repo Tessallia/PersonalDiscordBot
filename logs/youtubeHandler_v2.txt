@@ -1,2 +1,0 @@
-D:\python\DiscordBot\youtubeHandler_v2.py--func:__init__--line:28 
-    ERROR-- fuck

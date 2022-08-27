@@ -34,25 +34,30 @@ class music_downloader():
             self.logger.info("created song dir")
 
     def fix_title(self, string):
-        return re.sub(r'[\\/:*?"<>|]+', "_", string)
-
+        string = re.sub(r'[\\/:*?<>|]+', "_", string)
+        return re.sub(r'["]',"'", string)
 
 
     def get_info(self, url):
+        """
+        :param url:
+        :return: list with song info
+        """
         print("#################info#####################")
 
         with yt_dlp.YoutubeDL({'quiet':True}) as ydl:
             info = ydl.extract_info(url, download=False)
         songs = []
 
-        try:
+        if 'entries' in info.keys():
             entries = info['entries']
             for entry in entries:
-                songs.append(self.fix_title(entry['title']), entry['webpage_url'])
-            return songs
-        except:
+                songs.append([self.fix_title(entry['title']), entry['webpage_url']])
+        else:
             #for _ in info.keys(): print(_)
-            return [self.fix_title(info["title"]), info['original_url']]
+            songs.append([self.fix_title(info["title"]), info['original_url']])
+
+        return songs
 
     def download_url(self, url):
         print("##################download####################")

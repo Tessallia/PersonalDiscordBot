@@ -6,17 +6,14 @@ import youtubeHandler_v2 as yh
 class Exobot(commands.Cog):
 #    PREFIX = "!"
 #    client = commands.Bot(command_prefix=PREFIX)
-    cur_song = None
-    queue = []
 
     def __init__(self, client):
 
         self.client = client
 
         self.exo_log = create_logger(__name__, logging.ERROR, './logs')
-        self.CUR_SONG = None
         self.queue = []
-        self.Loop = False
+        self.loop = False
         self.voice = None
 
 
@@ -64,11 +61,9 @@ class Exobot(commands.Cog):
         return dl.get_info(url)
 
     def after_play(self, err):
+        if not self.loop: self.queue.pop(0)
         if len(self.queue) > 0:
-            CUR_SONG = self.queue.pop(0)
-            self.voice.play(discord.FFmpegPCMAudio('songs' + os.sep + CUR_SONG), after=self.after_play)
-
-
+            self.voice.play(discord.FFmpegPCMAudio('songs'+ os.sep + self.queue[0][0]+'.mp3'), after=self.after_play)
 
     @commands.command()
     async def play(self, ctx, url: str):
@@ -85,19 +80,44 @@ class Exobot(commands.Cog):
 
         await spl
         song = spl.result()
-        if type(song) == list:
+        try:
             if len(song) > 0:
                 for x in song: self.queue.append(x)
-                self.cur_song = self.queue.pop(0)
             else: print('empty list')
-        elif type(song) == str:
-            if not self.voice.is_playing(): CUR_SONG = song
-            else: self.queue.append(song)
-
+        except Exception as e: self.exo_log.error(e+ "::song list::"+ song)
         try:
-            self.voice.play(discord.FFmpegPCMAudio(self.cur_song[0]), after=self.after_play)
+            self.voice.play(discord.FFmpegPCMAudio('songs'+ os.sep + self.queue[0][0]+'.mp3'), after=self.after_play)
         except Exception as e: print(e)
+    @commands.command()
+    async def skip(self, ctx):
+        self.voice.stop()
 
+    @commands.command()
+    async def current(self, ctx):
+        await ctx.send(self.queue[0][1])
 
+    @commands.command()
+    async def shuffle(self, ctx):
+        random.shuffle(self.queue)
+    @commands.command()
+    async def loop(self,ctx):
+        if self.loop: self.loop = False
+        else: self.loop = True
+
+    @commands.command()
+    async def stop(self, ctx):
+        self.queue = []
+        self.voice.stop()
+
+    @commands.command()
+    async def leave(self, ctx):
+        if self.voice.is_connected(): self.voice.disconnect()
+
+    @commands.command()
+    async def pause(self, ctx):
+        if self.voice.is_playing(): self.voice.pause()
+
+    async def resume(self, ctx):
+        if self.voice.is_paused(): self.voice.resume()
 def setup(client):
     client.add_cog(Exobot(client))
