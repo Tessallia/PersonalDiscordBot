@@ -1,6 +1,6 @@
 import logging, os
 
-log_fmt = logging.Formatter("%(pathname)s s%(funcName)s %(lineno)d %(levelname)s %(message)s")
+log_fmt = logging.Formatter("%(pathname)s--func:%(funcName)s--line:%(lineno)d \n    %(levelname)s-- %(message)s")
 def create_file(path, file_name):
     with open(path + os.sep + file_name, "w") as fp:
         pass
@@ -26,7 +26,7 @@ class Root_log():
     def __init__(self, master_level=logging.ERROR, master_terminal=False, max_log_age=10):
 
 
-        self.format_string = "%(pathname)s s%(funcName)s %(lineno)d %(levelname)s %(message)s"
+        self.format_string = "%(pathname)songs songs%(funcName)songs %(lineno)d %(levelname)songs %(message)songs"
         self.root = logging.getLogger("")
 
         self.log_dir = os.path.dirname(__file__)+os.sep+ "logs"
