@@ -1,7 +1,6 @@
 import discord, os, tokey
 from discord.ext import commands
-import youtubeHandler_v2 as yh
-import youtubeHandler_v2 as yh
+import youtubeHandler as yh
 
 
 PREFIX = "!"
@@ -22,7 +21,7 @@ for file in os.listdir('./cogs'):
 
 #dl = yh.music_downloader()
 #url = "https://www.youtube.com/playlist?list=PL_gcregDRpNt2tOoG4bgaTIUeozdXfBT_"
-#shit = dl.get_info(url)
+#shit = dl.get_info("https://www.youtube.com/playlist?list=PL_gcregDRpNvYOVyLQ9i9tfuNDatXj4w4")
 #print(shit)
 
 
